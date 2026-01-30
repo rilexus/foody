@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useRecipes } from "../../hooks/use-recipes";
 import { ActionButtons } from "../../ui/ActionButtons";
-import { PrimaryButton, SecondaryButton } from "../../ui/Button";
+import { SecondaryButton } from "../../ui/Button";
 import { EditRecipe } from "./edit";
+import { useIngredients } from "../../state/hooks/use-ingredients";
+import { calculateAvailability } from "../../utils/calculate-availability";
+import { Tooltip } from "../../ui/Tooltip";
 
 const Container = styled.div`
   display: flex;
@@ -205,6 +208,20 @@ const IngredientsList = styled.ul`
   margin: 0 0 32px 0;
 `;
 
+const Checkmark = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: ${({ color = "#0284c7" }) => color};
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+`;
+
 const IngredientItem = styled.li`
   padding: 16px;
   background: #f9fafb;
@@ -215,21 +232,6 @@ const IngredientItem = styled.li`
   gap: 12px;
   font-size: 16px;
   color: #1f2937;
-
-  &:before {
-    content: "✓";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    background: #0284c7;
-    color: white;
-    border-radius: 50%;
-    font-size: 14px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
 `;
 
 const InstructionsList = styled.ol`
@@ -288,6 +290,8 @@ const Tag = styled.span`
 export default function Recipe({ id, onClose }) {
   const recipeId = Number(id);
   const [recipes, setRecipes] = useRecipes();
+
+  const [ingredients] = useIngredients();
 
   const recipe = recipes.find((r) => r.id === recipeId);
 
@@ -369,9 +373,31 @@ export default function Recipe({ id, onClose }) {
       <ContentSection>
         <SectionTitle>Ingredients</SectionTitle>
         <IngredientsList>
-          {recipe.ingredients.map((ingredient, index) => (
-            <IngredientItem key={index}>{ingredient}</IngredientItem>
-          ))}
+          {recipe.ingredients.map(({ id, amount, unit }, index) => {
+            const { name, availableAmount, availableUnit } = ingredients.find(
+              (ing) => id === ing.id,
+            );
+
+            const isAvailable = calculateAvailability(
+              { amount: availableAmount, unit: availableUnit },
+              { amount, unit },
+            );
+
+            return (
+              <IngredientItem key={index}>
+                <Tooltip
+                  element={
+                    <div>{isAvailable ? "Avalable" : "Not Avalable"}</div>
+                  }
+                >
+                  <Checkmark color={isAvailable ? "#0284c7" : "red"}>
+                    {isAvailable ? "✓" : "x"}
+                  </Checkmark>
+                </Tooltip>
+                {amount} {unit} {name}
+              </IngredientItem>
+            );
+          })}
         </IngredientsList>
 
         <SectionTitle>Instructions</SectionTitle>

@@ -2,6 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { useIngredients } from "../../state/hooks/use-ingredients";
+import { Select } from "../../ui/Select";
+import { Flex } from "../../ui/Flex";
 
 const FormSection = styled.div`
   background: white;
@@ -322,6 +324,29 @@ const DynamicInputWrapper = styled.div`
   flex: 1;
 `;
 
+const UnitSelect = styled.select`
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 100px;
+
+  &:focus {
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+  }
+`;
+
+const AmountInput = styled(Input)`
+  margin-bottom: 0;
+  max-width: 120px;
+`;
+
 export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
   const [formData, setFormData] = useState(() => ({
     id: recipe?.id || Date.now(),
@@ -335,17 +360,19 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
     time: recipe?.time,
   }));
 
-  const [ingredients, setIngredients] = useState(recipe?.ingredients || [""]);
+  const [predefinedIngredients] = useIngredients();
+
+  const [ingredients, setIngredients] = useState(
+    () =>
+      recipe?.ingredients
+        .map(({ id }) => predefinedIngredients.find((ing) => ing.id === id))
+        .map(({ name }) => name) || [""],
+  );
   const [instructions, setInstructions] = useState(
     recipe?.instructions || [""],
   );
   const [tags, setTags] = useState(recipe?.tags || []);
   const [currentTag, setCurrentTag] = useState("");
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showDropdown, setShowDropdown] = useState(null);
-
-  const [predefinedIngredients] = useIngredients();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -416,19 +443,19 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
     formData.fat &&
     formData.time;
 
-  const selectIngredient = (index, ingredientName, servingSize) => {
-    const newIngredients = [...ingredients];
-    newIngredients[index] = `${servingSize} ${ingredientName}`;
-    setIngredients(newIngredients);
-    setShowDropdown(null);
-  };
+  // const selectIngredient = (index, ingredientName, servingSize) => {
+  //   const newIngredients = [...ingredients];
+  //   newIngredients[index] = `${servingSize} ${ingredientName}`;
+  //   setIngredients(newIngredients);
+  //   setShowDropdown(null);
+  // };
 
-  const getFilteredIngredients = (query) => {
-    if (!query.trim()) return predefinedIngredients;
-    return predefinedIngredients.filter((ing) =>
-      ing.name.toLowerCase().includes(query.toLowerCase()),
-    );
-  };
+  // const getFilteredIngredients = (query) => {
+  //   if (!query.trim()) return predefinedIngredients;
+  //   return predefinedIngredients.filter((ing) =>
+  //     ing.name.toLowerCase().includes(query.toLowerCase()),
+  //   );
+  // };
   return (
     <form onSubmit={handleSubmit}>
       <FormSection>
@@ -542,71 +569,55 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
 
       <FormSection>
         <SectionTitle>Ingredients</SectionTitle>
-        <DynamicList>
-          {ingredients.map((ingredient, index) => {
-            const filteredIngredients = getFilteredIngredients(ingredient);
-            return (
-              <DynamicItem key={index}>
-                <DynamicInputWrapper>
-                  <DynamicInput
-                    type="text"
-                    value={ingredient}
-                    onChange={(e) => {
-                      updateIngredient(index, e.target.value);
-                      setShowDropdown(index);
-                    }}
-                    onFocus={() => setShowDropdown(index)}
-                    onBlur={() => {
-                      // Delay to allow click on dropdown item
-                      setTimeout(() => setShowDropdown(null), 200);
-                    }}
-                    placeholder={`Search ingredients or type manually...`}
-                  />
-                  {showDropdown === index && (
-                    <DropdownMenu>
-                      {filteredIngredients.length > 0 ? (
-                        filteredIngredients.map((item) => (
-                          <DropdownItem
-                            key={item.id}
-                            onMouseDown={(e) => {
-                              e.preventDefault();
-                              selectIngredient(
-                                index,
-                                item.name,
-                                item.servingSize,
-                              );
-                            }}
-                          >
-                            <DropdownIcon>{item.icon}</DropdownIcon>
-                            <DropdownText>
-                              <DropdownName>{item.name}</DropdownName>
-                              <DropdownServing>
-                                Default: {item.servingSize}
-                              </DropdownServing>
-                            </DropdownText>
-                          </DropdownItem>
-                        ))
-                      ) : (
-                        <NoResults>
-                          No ingredients found. Type manually to add custom
-                          ingredient.
-                        </NoResults>
-                      )}
-                    </DropdownMenu>
-                  )}
-                </DynamicInputWrapper>
-                {ingredients.length > 1 && (
-                  <RemoveButton
-                    type="button"
-                    onClick={() => removeIngredient(index)}
-                  >
-                    ×
-                  </RemoveButton>
-                )}
-              </DynamicItem>
-            );
-          })}
-        </DynamicList>
+        {ingredients.map(({ id, amount, unit }) => {
+          const ingredient = predefinedIngredients.find((ing) => ing.id === id);
+
+          return (
+            <Flex gap="8px">
+              <Select
+                value={""}
+                onChange={({ label }) => {}}
+                options={predefinedIngredients.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                }))}
+              />
+
+              <AmountInput
+                type="text"
+                value={amount}
+                onChange={(e) => updateIngredientAmount(index, e.target.value)}
+                placeholder="Amount"
+              />
+
+              <UnitSelect
+                value={unit}
+                onChange={(e) => updateIngredientUnit(index, e.target.value)}
+              >
+                {[
+                  "kg",
+                  "g",
+                  "l",
+                  "ml",
+                  "cup",
+                  "tbsp",
+                  "tsp",
+                  "oz",
+                  "lb",
+                  "whole",
+                  "bunch",
+                  "clove",
+                  "piece",
+                ].map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </UnitSelect>
+            </Flex>
+          );
+        })}
+
         <AddButton type="button" onClick={addIngredient}>
           + Add Ingredient
         </AddButton>

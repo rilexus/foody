@@ -1,130 +1,162 @@
-"use client";
-
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-const SelectContainer = styled.div`
+const DynamicList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-family: "PayPalSansSmall-Regular", Helvetica, Arial, sans-serif;
+  gap: 12px;
 `;
 
-const Label = styled.label`
-  font-size: 13px;
-  font-weight: 500;
-  color: ${(props) => (props.$disabled ? "#9da3a6" : "#2c2e2f")};
-  line-height: 1.5;
-
-  ${(props) =>
-    props.$required &&
-    `
-    &::after {
-      content: "*";
-      color: #d20000;
-      margin-left: 4px;
-    }
-  `}
+const DynamicItem = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  anchor-name: --dynamicInput;
 `;
 
-export const StyledSelect = styled.select`
+const Input = styled.input`
   width: 100%;
-  height: 44px;
-  padding: 0 36px 0 12px;
-  border: 1px solid ${(props) => (props.$error ? "#d20000" : "#cbd2d6")};
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: #2c2e2f;
-  font-size: 14px;
-  font-family: "PayPalSansSmall-Regular", Helvetica, Arial, sans-serif;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%232c2e2f' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 16px;
-
-  &:hover:not(:disabled) {
-    border-color: ${(props) => (props.$error ? "#d20000" : "#0070ba")};
-  }
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #1f2937;
+  transition: all 0.2s;
+  box-sizing: border-box;
 
   &:focus {
-    border-color: ${(props) => (props.$error ? "#d20000" : "#0070ba")};
-    box-shadow: 0 0 0 2px
-      ${(props) =>
-        props.$error ? "rgba(210, 0, 0, 0.1)" : "rgba(0, 112, 186, 0.1)"};
-  }
-
-  &:disabled {
-    background-color: #f5f7fa;
-    color: #9da3a6;
-    cursor: not-allowed;
-    border-color: #eaeced;
-  }
-
-  option {
-    padding: 10px;
-    background-color: #ffffff;
-    color: #2c2e2f;
-  }
-
-  /* Placeholder styling */
-  &:invalid {
-    color: #9da3a6;
+    outline: none;
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
   }
 `;
 
-const HelperText = styled.span`
+const DynamicInput = styled(Input)`
+  flex: 1;
+  margin-bottom: 0;
+  width: 100%;
+`;
+
+const DropdownMenu = styled.div`
+  position: fixed;
+
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 240px;
+  overflow-y: auto;
+  position-anchor: --dynamicInput;
+  position-area: bottom left;
+  position-try-fallbacks:
+    top left,
+    bottom right,
+    top right;
+`;
+
+const DropdownItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f0f9ff;
+  }
+`;
+
+const DropdownIcon = styled.span`
+  font-size: 20px;
+`;
+
+const DropdownText = styled.div`
+  flex: 1;
+`;
+
+const DropdownName = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+`;
+
+const DropdownServing = styled.div`
   font-size: 12px;
-  color: ${(props) => (props.$error ? "#d20000" : "#6c7378")};
-  line-height: 1.4;
+  color: #6b7280;
+  margin-top: 2px;
 `;
 
-export function Select({
-  label,
-  options,
-  value,
-  name,
-  onChange,
-  placeholder = "Select an option",
-  error,
-  helperText,
-  disabled = false,
-  required = false,
-}) {
-  const handleChange = (e) => {
-    onChange?.(e);
-  };
+const NoResults = styled.div`
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 14px;
+`;
+const DynamicInputWrapper = styled.div`
+  position: relative;
+  flex: 1;
+`;
 
+export const Select = ({ options, value = "", onChange }) => {
+  const getFilteredOptions = (options, query) => {
+    if (!query.trim()) return options;
+    return options.filter((ing) =>
+      ing.label.toLowerCase().includes(query.toLowerCase()),
+    );
+  };
+  const filteredOptions = getFilteredOptions(options, value);
+  const [showDropdown, setShowDropdown] = useState(null);
   return (
-    <SelectContainer>
-      {label && (
-        <Label $disabled={disabled} $required={required}>
-          {label}
-        </Label>
-      )}
-      <StyledSelect
-        name={name}
-        value={value || ""}
-        onChange={handleChange}
-        $error={!!error}
-        disabled={disabled}
-        required={required}
-      >
-        <option value="" disabled hidden>
-          {placeholder}
-        </option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </StyledSelect>
-      {(error || helperText) && (
-        <HelperText $error={!!error}>{error || helperText}</HelperText>
-      )}
-    </SelectContainer>
+    <DynamicList>
+      <DynamicItem>
+        <DynamicInputWrapper>
+          <DynamicInput
+            type="text"
+            value={value}
+            onChange={(e) => {
+              onChange({ label: e.target.value, value: e.target.value });
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => {
+              // Delay to allow click on dropdown item
+              setTimeout(() => setShowDropdown(false), 200);
+            }}
+            placeholder={`Search ingredients or type manually...`}
+          />
+          {showDropdown && (
+            <DropdownMenu>
+              {filteredOptions.length > 0 ? (
+                filteredOptions.map((item) => (
+                  <DropdownItem
+                    key={item.value}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setShowDropdown(false);
+                      onChange(item);
+                    }}
+                  >
+                    <DropdownText>
+                      <DropdownName>{item.label}</DropdownName>
+                    </DropdownText>
+                  </DropdownItem>
+                ))
+              ) : (
+                <NoResults>
+                  No ingredients found. Type manually to add custom ingredient.
+                </NoResults>
+              )}
+            </DropdownMenu>
+          )}
+        </DynamicInputWrapper>
+      </DynamicItem>
+    </DynamicList>
   );
-}
+};
