@@ -1,3 +1,127 @@
+const shopingList = [
+  {
+    id: 1,
+    name: "Chicken Breast",
+    icon: "🍗",
+    quantity: "1 kg",
+    category: "Protein",
+    notes: "Boneless",
+    checked: false,
+  },
+  {
+    id: 2,
+    name: "Brown Rice",
+    icon: "🍚",
+    quantity: "2 cups",
+    category: "Grains",
+    checked: false,
+  },
+  {
+    id: 3,
+    name: "Broccoli",
+    icon: "🥦",
+    quantity: "500g",
+    category: "Vegetables",
+    checked: true,
+  },
+  {
+    id: 4,
+    name: "Salmon",
+    icon: "🐟",
+    quantity: "400g",
+    category: "Protein",
+    notes: "Fresh",
+    checked: false,
+  },
+  {
+    id: 5,
+    name: "Sweet Potato",
+    icon: "🍠",
+    quantity: "6 medium",
+    category: "Vegetables",
+    checked: false,
+  },
+  {
+    id: 6,
+    name: "Greek Yogurt",
+    icon: "🥛",
+    quantity: "500ml",
+    category: "Dairy",
+    checked: false,
+  },
+  {
+    id: 7,
+    name: "Avocado",
+    icon: "🥑",
+    quantity: "3 whole",
+    category: "Produce",
+    checked: false,
+  },
+  {
+    id: 8,
+    name: "Almonds",
+    icon: "🥜",
+    quantity: "200g",
+    category: "Nuts & Seeds",
+    checked: false,
+  },
+  {
+    id: 9,
+    name: "Spinach",
+    icon: "🥬",
+    quantity: "1 bunch",
+    category: "Vegetables",
+    checked: true,
+  },
+  {
+    id: 10,
+    name: "Eggs",
+    icon: "🥚",
+    quantity: "12 eggs",
+    category: "Protein",
+    checked: false,
+  },
+  {
+    id: 11,
+    name: "Quinoa",
+    icon: "🌾",
+    quantity: "1 cup",
+    category: "Grains",
+    checked: false,
+  },
+  {
+    id: 12,
+    name: "Blueberries",
+    icon: "🫐",
+    quantity: "250g",
+    category: "Fruits",
+    checked: false,
+  },
+  {
+    id: 13,
+    name: "Olive Oil",
+    icon: "🫒",
+    quantity: "500ml",
+    category: "Oils",
+    checked: false,
+  },
+  {
+    id: 14,
+    name: "Garlic",
+    icon: "🧄",
+    quantity: "1 bulb",
+    category: "Vegetables",
+    checked: false,
+  },
+  {
+    id: 15,
+    name: "Tomatoes",
+    icon: "🍅",
+    quantity: "6 medium",
+    category: "Vegetables",
+    checked: false,
+  },
+];
 const ingredients = [
   {
     id: 1,
@@ -11,6 +135,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 2,
@@ -24,6 +150,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Pantry",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 3,
@@ -37,6 +165,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 4,
@@ -50,6 +180,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: false,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 5,
@@ -63,6 +195,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Pantry",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 6,
@@ -76,6 +210,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 7,
@@ -89,6 +225,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Room Temp",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 8,
@@ -102,6 +240,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Pantry",
     inStock: false,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 9,
@@ -115,6 +255,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 10,
@@ -128,6 +270,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 11,
@@ -141,6 +285,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Pantry",
     inStock: true,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
   {
     id: 12,
@@ -154,6 +300,8 @@ const ingredients = [
     servingSize: "100g",
     storage: "Refrigerated",
     inStock: false,
+    availableAmount: 2,
+    availableUnit: "kg",
   },
 ];
 
@@ -167,6 +315,7 @@ export const defaultState = {
     accentColor: "#f97316",
   },
   ingredients: ingredients,
+  shopingList,
   recipes: [
     {
       id: 1,

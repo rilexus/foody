@@ -325,10 +325,10 @@ export default function Recipe({ id, onClose }) {
           <RecipeMainInfo>
             <RecipeTitle>{recipe.name}</RecipeTitle>
             <RecipeDescription>{recipe.description}</RecipeDescription>
-            <ActionButtons>
+            {/* <ActionButtons>
               <PrimaryButton>+ Add to Meal Plan</PrimaryButton>
               <SecondaryButton>♡ Save Recipe</SecondaryButton>
-            </ActionButtons>
+            </ActionButtons> */}
           </RecipeMainInfo>
         </RecipeTopSection>
 

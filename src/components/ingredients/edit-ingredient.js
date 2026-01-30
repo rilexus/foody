@@ -251,7 +251,28 @@ const availableIcons = [
   "🍄",
 ];
 
-export default function EditIngredientPage({ onSave, onCancel, ingredient, onDelete }) {
+const measurementUnits = [
+  "kg",
+  "g",
+  "l",
+  "ml",
+  "cup",
+  "tbsp",
+  "tsp",
+  "oz",
+  "lb",
+  "whole",
+  "bunch",
+  "clove",
+  "piece",
+];
+
+export default function EditIngredientPage({
+  onSave,
+  onCancel,
+  ingredient,
+  onDelete,
+}) {
   const [name, setName] = useState(ingredient?.name || "");
   const [icon, setIcon] = useState(ingredient?.icon || "");
   const [category, setCategory] = useState(ingredient?.category || "");
@@ -262,6 +283,8 @@ export default function EditIngredientPage({ onSave, onCancel, ingredient, onDel
   const [servingSize, setServingSize] = useState(ingredient?.servingSize || "");
   const [storage, setStorage] = useState(ingredient?.storage || "");
   const [inStock, setInStock] = useState(ingredient?.inStock || false);
+  const [availableAmount, setAvailableAmount] = useState("");
+  const [availableUnit, setAvailableUnit] = useState("kg");
 
   useEffect(() => {
     if (ingredient) {
@@ -275,6 +298,8 @@ export default function EditIngredientPage({ onSave, onCancel, ingredient, onDel
       setServingSize(ingredient.servingSize);
       setStorage(ingredient.storage);
       setInStock(ingredient.inStock);
+      setAvailableAmount(ingredient.availableAmount || "");
+      setAvailableUnit(ingredient.availableUnit || "kg");
     }
   }, [ingredient]);
 
@@ -291,13 +316,15 @@ export default function EditIngredientPage({ onSave, onCancel, ingredient, onDel
       servingSize,
       storage,
       inStock,
+      availableAmount,
+      availableUnit,
     };
     onSave(updatedIngredient);
   };
 
   const handleDelete = (ing) => {
-    onDelete(ing)
-  }
+    onDelete(ing);
+  };
 
   return (
     <Container>
@@ -435,6 +462,29 @@ export default function EditIngredientPage({ onSave, onCancel, ingredient, onDel
                   type="button"
                 />
               </ToggleContainer>
+            </FormField>
+            <FormField>
+              <Label>Available Amount</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={availableAmount}
+                onChange={(e) => setAvailableAmount(e.target.value)}
+              />
+            </FormField>
+
+            <FormField>
+              <Label>Unit</Label>
+              <Select
+                value={availableUnit}
+                onChange={(e) => setAvailableUnit(e.target.value)}
+              >
+                {measurementUnits.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </Select>
             </FormField>
           </FormGrid>
         </FormSection>

@@ -8,6 +8,7 @@ import { Flex } from "./ui/Flex";
 import { Recipes } from "./components/recipes/page";
 import SettingsPage from "./components/settings/page";
 import IngredientsPage from "./components/ingredients/page";
+import ShoppingListPage from "./components/shoping-list/page";
 
 const Container = styled.div`
   display: flex;
@@ -56,9 +57,9 @@ const LogoText = styled.h1`
   margin: 0;
 `;
 
-const NavItem = styled.button`
+const NavItem = styled(Link)`
   display: flex;
-
+  text-decoration: none;
   align-items: center;
   gap: 12px;
   padding: 12px 24px;
@@ -94,18 +95,11 @@ function App() {
             <LogoText>Foody</LogoText>
           </Logo>
           {/* <NavItem $active>📊 Planner</NavItem> */}
-          <NavItem>
-            <Link to="/">Home</Link>
-          </NavItem>
-          <NavItem>
-            <Link to="/recipes">Recipes</Link>
-          </NavItem>
-          <NavItem>
-            <Link to="/ingredients">Ingredients</Link>
-          </NavItem>
-          <NavItem>
-            <Link to="/Settings">⚙️ Settings</Link>
-          </NavItem>
+          <NavItem to="/">Home</NavItem>
+          <NavItem to="/recipes">Recipes</NavItem>
+          <NavItem to="/ingredients">Ingredients</NavItem>
+          <NavItem to="/shoping-list">Shoping List</NavItem>
+          <NavItem to="/settings">⚙️ Settings</NavItem>
           {/* <NavItem>🍴 Meals</NavItem>
           <NavItem>📈 Progress</NavItem>
           <NavItem>⚙️ Settings</NavItem> */}
@@ -117,6 +111,7 @@ function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/ingredients" element={<IngredientsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/shoping-list" element={<ShoppingListPage />} />
           </Routes>
         </MainContent>
       </Container>

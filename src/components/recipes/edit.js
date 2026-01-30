@@ -28,7 +28,6 @@ const PageSubtitle = styled.div`
 `;
 
 export function EditRecipe({ recipe, onSave, onCancel }) {
-  
   return (
     <FormContainer>
       <Header>
