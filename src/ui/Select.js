@@ -104,24 +104,27 @@ const DynamicInputWrapper = styled.div`
   flex: 1;
 `;
 
-export const Select = ({ options, value = "", onChange }) => {
+export const Select = ({ options, selected, onChange }) => {
   const getFilteredOptions = (options, query) => {
     if (!query.trim()) return options;
     return options.filter((ing) =>
       ing.label.toLowerCase().includes(query.toLowerCase()),
     );
   };
-  const filteredOptions = getFilteredOptions(options, value);
+  const [inputValue, setInputValue] = useState(selected.label);
+
+  const filteredOptions = getFilteredOptions(options, inputValue);
   const [showDropdown, setShowDropdown] = useState(null);
+
   return (
     <DynamicList>
       <DynamicItem>
         <DynamicInputWrapper>
           <DynamicInput
             type="text"
-            value={value}
+            value={inputValue}
             onChange={(e) => {
-              onChange({ label: e.target.value, value: e.target.value });
+              setInputValue(e.target.value);
               setShowDropdown(true);
             }}
             onFocus={() => setShowDropdown(true)}
@@ -140,6 +143,7 @@ export const Select = ({ options, value = "", onChange }) => {
                     onMouseDown={(e) => {
                       e.preventDefault();
                       setShowDropdown(false);
+                      setInputValue(item.label);
                       onChange(item);
                     }}
                   >

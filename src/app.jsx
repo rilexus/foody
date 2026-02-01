@@ -1,17 +1,17 @@
 "use client";
 import React from "react";
 import styled from "styled-components";
-import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { HashRouter, Routes, Route, Link } from "react-router-dom";
-import { Flex } from "./ui/Flex";
 import { Recipes } from "./components/recipes/page";
 import SettingsPage from "./components/settings/page";
 import IngredientsPage from "./components/ingredients/page";
 import ShoppingListPage from "./components/shoping-list/page";
+import PlannerPage from "./components/planner/page";
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
 
   height: 100vh;
   overflow: hidden;
@@ -22,20 +22,29 @@ const Container = styled.div`
     Arial, sans-serif;
 `;
 
-const Sidebar = styled.aside`
-  width: 240px;
+const TopBar = styled.header`
   background: white;
-  border-right: 1px solid #e5e7eb;
-  padding: 24px 0;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 32px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+`;
+const TabsContainer = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 `;
 
 const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 24px;
+
+  padding: 16px 0;
+
   margin-bottom: 32px;
 `;
 
@@ -89,21 +98,21 @@ function App() {
   return (
     <HashRouter>
       <Container>
-        <Sidebar>
+        <TopBar>
           <Logo>
             <LogoIcon>🍽️</LogoIcon>
             <LogoText>Foody</LogoText>
           </Logo>
-          {/* <NavItem $active>📊 Planner</NavItem> */}
-          <NavItem to="/">Home</NavItem>
-          <NavItem to="/recipes">Recipes</NavItem>
-          <NavItem to="/ingredients">Ingredients</NavItem>
-          <NavItem to="/shoping-list">Shoping List</NavItem>
-          <NavItem to="/settings">⚙️ Settings</NavItem>
-          {/* <NavItem>🍴 Meals</NavItem>
-          <NavItem>📈 Progress</NavItem>
-          <NavItem>⚙️ Settings</NavItem> */}
-        </Sidebar>
+
+          <TabsContainer>
+            <NavItem to="/">Home</NavItem>
+            <NavItem to="/recipes">Recipes</NavItem>
+            <NavItem to="/ingredients">Ingredients</NavItem>
+            <NavItem to="/shoping-list">Shoping List</NavItem>
+            <NavItem to="/planner">🗓️ Planner</NavItem>
+            <NavItem to="/settings">⚙️ Settings</NavItem>
+          </TabsContainer>
+        </TopBar>
 
         <MainContent>
           <Routes>
@@ -112,6 +121,7 @@ function App() {
             <Route path="/ingredients" element={<IngredientsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/shoping-list" element={<ShoppingListPage />} />
+            <Route path="/planner" element={<PlannerPage />} />
           </Routes>
         </MainContent>
       </Container>

@@ -375,7 +375,7 @@ export default function ShoppingListPage() {
   const addItem = () => {
     if (newItemName.trim()) {
       const newItem = {
-        id: Math.max(...items.map((i) => i.id), 0) + 1,
+        id: Date.now,
         name: newItemName,
         icon: "📦",
         unit: newItemUnit,
@@ -536,11 +536,11 @@ export default function ShoppingListPage() {
             onKeyPress={(e) => e.key === "Enter" && addItem()}
           /> */}
           <Select
-            value={newItemName}
+            selected={{ label: newItemName, value: newItemName }}
             onChange={({ label }) => setNewItemName(label)}
-            options={ingredients.map(({ name }) => ({
+            options={ingredients.map(({ name, id }) => ({
               label: name,
-              value: name,
+              value: id,
             }))}
           />
           <AddItemInput
@@ -552,7 +552,7 @@ export default function ShoppingListPage() {
             style={{ maxWidth: "150px" }}
           />
           <Select
-            value={newItemUnit}
+            selected={{ label: newItemUnit, value: newItemUnit }}
             options={measurementUnits.map((u) => ({ label: u, value: u }))}
             onChange={({ value }) => setNewItemUnit(value)}
           />

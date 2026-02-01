@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useState } from "react";
 import EditIngredientPage from "./edit-ingredient";
 import { useIngredients } from "../../state/hooks/use-ingredients";
+import { useRecipes } from "../../state/hooks/use-recipes";
 
 const MainContent = styled.main`
   flex: 1;
@@ -299,7 +300,17 @@ export default function IngredientsPage() {
     });
   };
 
+  const [recipes] = useRecipes();
+
   const handleDelete = (ingr) => {
+    const ingredients = recipes.map(({ ingredients }) => ingredients).flat();
+
+    if (ingredients.find(({ id }) => id === ingr.id)) {
+      alert(
+        `Cant delete ${ingr.name}! One of your recipes is using ${ingr.name}`,
+      );
+      return;
+    }
     setIngredients((ingrid) => {
       return [...ingrid.filter(({ id }) => ingr.id !== id)];
     });

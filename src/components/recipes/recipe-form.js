@@ -364,9 +364,11 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
 
   const [ingredients, setIngredients] = useState(
     () =>
-      recipe?.ingredients
-        .map(({ id }) => predefinedIngredients.find((ing) => ing.id === id))
-        .map(({ name }) => name) || [""],
+      recipe?.ingredients.map((i) => {
+        // recipe.ingredients are referenced only by id
+        const ing = predefinedIngredients.find((ing) => ing.id === i.id);
+        return { name: ing.name, ...i };
+      }) || [],
   );
   const [instructions, setInstructions] = useState(
     recipe?.instructions || [""],
@@ -384,16 +386,22 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
   };
 
   const addIngredient = () => {
-    setIngredients([...ingredients, ""]);
+    setIngredients([
+      ...ingredients,
+      { id: Date.now(), unit: "g", amount: 0, name: "" },
+    ]);
   };
 
   const removeIngredient = (index) => {
     setIngredients(ingredients.filter((_, i) => i !== index));
   };
 
-  const updateIngredient = (index, value) => {
+  const updateIngredient = (index, { value }) => {
+    const ing = predefinedIngredients.find((i) => i.id === value);
     const newIngredients = [...ingredients];
-    newIngredients[index] = value;
+    newIngredients[index].name = ing.name;
+    newIngredients[index].id = ing.id;
+
     setIngredients(newIngredients);
   };
 
@@ -411,6 +419,18 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
     setInstructions(newInstructions);
   };
 
+  const updateIngredientAmount = (index, amount) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index].amount = Number(amount);
+    setIngredients(newIngredients);
+  };
+
+  const updateIngredientUnit = (index, amount) => {
+    const newIngredients = [...ingredients];
+    newIngredients[index].unit = amount;
+    setIngredients(newIngredients);
+  };
+
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
       setTags([...tags, currentTag.trim()]);
@@ -426,11 +446,15 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
     e.preventDefault();
     const newRecipe = {
       ...formData,
-      ingredients: ingredients.filter((i) => i.trim()),
+      ingredients: ingredients.map(({ id, amount, unit }) => ({
+        id,
+        amount,
+        unit,
+      })),
       instructions: instructions.filter((i) => i.trim()),
       tags,
     };
-    console.log({ newRecipe });
+
     onSubmit(newRecipe);
   };
 
@@ -569,14 +593,17 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
 
       <FormSection>
         <SectionTitle>Ingredients</SectionTitle>
-        {ingredients.map(({ id, amount, unit }) => {
+        {ingredients.map(({ id, amount, unit }, index) => {
           const ingredient = predefinedIngredients.find((ing) => ing.id === id);
 
           return (
-            <Flex gap="8px">
+            <Flex gap="8px" key={id}>
               <Select
-                value={""}
-                onChange={({ label }) => {}}
+                selected={{
+                  label: ingredient?.name || "",
+                  value: ingredient?.id || null,
+                }}
+                onChange={(opt) => updateIngredient(index, opt)}
                 options={predefinedIngredients.map(({ name, id }) => ({
                   label: name,
                   value: id,
@@ -614,6 +641,12 @@ export const RecipeForm = ({ onSubmit, recipe, onCancel }) => {
                   </option>
                 ))}
               </UnitSelect>
+              <RemoveButton
+                type="button"
+                onClick={() => removeIngredient(index)}
+              >
+                ×
+              </RemoveButton>
             </Flex>
           );
         })}
