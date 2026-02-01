@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { CreateRecipe } from "./create";
-import { useStore } from "../../hooks/use-store";
-import { Flex } from "../../ui/Flex";
-import styled from "styled-components";
-import { useRecipes } from "../../hooks/use-recipes";
-import Recipe from "./recipe";
-import { PageHeader, PageSubtitle, PageTitle } from "../../ui/Page";
+// fibonacci
+function fibonacci(n) {
+  if (n <= 1) return n;
+  return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+// Generate first 10 Fibonacci numbers
 
 const RecipePanel = styled.div`
   background: white;

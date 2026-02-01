@@ -106,9 +106,9 @@ function App() {
 
           <TabsContainer>
             <NavItem to="/">Home</NavItem>
+            <NavItem to="/shopping-list">🛒 Shopping List</NavItem>
             <NavItem to="/recipes">Recipes</NavItem>
             <NavItem to="/ingredients">Ingredients</NavItem>
-            <NavItem to="/shoping-list">Shoping List</NavItem>
             <NavItem to="/planner">🗓️ Planner</NavItem>
             <NavItem to="/settings">⚙️ Settings</NavItem>
           </TabsContainer>
