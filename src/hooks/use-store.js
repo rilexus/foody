@@ -1,5 +1,5 @@
 import { useReducer, useMemo } from "react";
-import { useStoreEvent } from "../utils/events";
+import { useStoreEvent } from "./use-store-event";
 
 /**
  * Custom hook for managing store state with electron
@@ -21,7 +21,6 @@ export const useStore = (name) => {
     }
     return null;
   }, [t, name]);
-  
 
   return [
     state,

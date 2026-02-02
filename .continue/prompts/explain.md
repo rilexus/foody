@@ -10,4 +10,4 @@ Explain the highlighted code in terms of:
     - Hidden assumptions and edge cases
     - Time/space complexity (if relevant)
     - One concrete improvement with justification
----.If anything is unclear, list specific questions at the end
+If anything is unclear, list specific questions at the end
