@@ -287,7 +287,7 @@ const Tag = styled.span`
   font-weight: 600;
 `;
 
-export default function Recipe({ id, onClose }) {
+function Recipe({ id, onClose }) {
   const recipeId = Number(id);
   const [recipes, setRecipes] = useRecipes();
 
@@ -421,3 +421,5 @@ export default function Recipe({ id, onClose }) {
     </RecipeContainer>
   );
 }
+
+export { Recipe };

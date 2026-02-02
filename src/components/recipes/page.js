@@ -4,6 +4,7 @@ import { useRecipes } from "../../state/hooks/use-recipes";
 import { Flex } from "../../ui/Flex";
 import { PageHeader, PageSubtitle, PageTitle } from "../../ui/Page";
 import { CreateRecipe } from "./create";
+import { Recipe } from "./recipe";
 
 const RecipePanel = styled.div`
   background: white;
