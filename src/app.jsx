@@ -42,10 +42,7 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-
   padding: 16px 0;
-
-  margin-bottom: 32px;
 `;
 
 const LogoIcon = styled.div`
@@ -120,7 +117,7 @@ function App() {
             <Route path="/recipes" element={<Recipes />} />
             <Route path="/ingredients" element={<IngredientsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/shoping-list" element={<ShoppingListPage />} />
+            <Route path="/shopping-list" element={<ShoppingListPage />} />
             <Route path="/planner" element={<PlannerPage />} />
           </Routes>
         </MainContent>

@@ -2,11 +2,12 @@
 import React from "react";
 import styled from "styled-components";
 import { useState } from "react";
+import { PageHeader, PageSubtitle, PageTitle } from "../../ui/Page";
+import { Flex } from "../../ui/Flex";
 
 const Container = styled.div`
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 24px;
 `;
 
 const Header = styled.div`
@@ -47,6 +48,7 @@ const TableWrapper = styled.div`
   padding: 32px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   overflow-x: auto;
+  height: 100vh;
 `;
 
 const TableHeader = styled.div`
@@ -466,10 +468,12 @@ export default function PlannerPage() {
 
   return (
     <Container>
-      <Header>
-        <Title>Meal Planner</Title>
-        <BackButton onClick={() => router.push("/")}>← Back to Home</BackButton>
-      </Header>
+      <PageHeader>
+        <Flex justifyContent="space-between">
+          <PageTitle style={{ color: "white" }}>Meal Planner</PageTitle>
+          <PageSubtitle>Meal Planner</PageSubtitle>
+        </Flex>
+      </PageHeader>
 
       <TableWrapper>
         <TableHeader>
