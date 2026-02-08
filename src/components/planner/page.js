@@ -624,12 +624,20 @@ export default function PlannerPage() {
   const addRecipeToColumn = (recipe) => {
     if (selectedColumnId === null) return;
 
-    setColumns(
-      columns.map((c) => {
-        if (c.id === selectedColumnId) {
-          return { ...c, recipes: [...c.recipes, recipe] };
+    setMealPlans(
+      mealPlans.map((p) => {
+        if (p.id === selectedPlanId) {
+          return {
+            ...p,
+            columns: p.columns.map((c) => {
+              if (c.id === selectedColumnId) {
+                return { ...c, recipes: [...c.recipes, recipe] };
+              }
+              return c;
+            }),
+          };
         }
-        return c;
+        return p;
       }),
     );
 
@@ -651,10 +659,6 @@ export default function PlannerPage() {
   return (
     <Container>
       <TableWrapper>
-        <TableHeader>
-          <TableTitle>Your Meal Plans</TableTitle>
-          <AddColumnButton onClick={addColumn}>+ Add Plan</AddColumnButton>
-        </TableHeader>
         <Flex>
           <Sidebar>
             <SidebarHeader>
@@ -704,49 +708,63 @@ export default function PlannerPage() {
             ))}
           </Sidebar>
 
-          <Table>
-            {columns.map((column) => (
-              <Column key={column.id}>
-                <ColumnHeader>
-                  <ColumnNameInput
-                    value={column.name}
-                    onChange={(e) =>
-                      updateColumnName(column.id, e.target.value)
-                    }
-                    placeholder="Plan name"
-                  />
-                  <RemoveColumnButton onClick={() => removeColumn(column.id)}>
-                    Remove
-                  </RemoveColumnButton>
-                </ColumnHeader>
+          <div
+            style={{
+              height: "90vh",
+              overflowY: "scroll",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <TableHeader>
+              <TableTitle>{selectedPlan?.name || "Meal Plan"}</TableTitle>
+              <AddColumnButton onClick={addColumn}>+ Add Plan</AddColumnButton>
+            </TableHeader>
+            <Table>
+              {columns.map((column) => (
+                <Column key={column.id}>
+                  <ColumnHeader>
+                    <ColumnNameInput
+                      value={column.name}
+                      onChange={(e) =>
+                        updateColumnName(column.id, e.target.value)
+                      }
+                      placeholder="Plan name"
+                    />
+                    <RemoveColumnButton onClick={() => removeColumn(column.id)}>
+                      Remove
+                    </RemoveColumnButton>
+                  </ColumnHeader>
 
-                {column.recipes.map((recipe) => (
-                  <RecipeCard key={recipe.id}>
-                    <RecipeHeader>
-                      <RecipeIcon>{recipe.icon}</RecipeIcon>
-                      <RemoveRecipeButton
-                        onClick={() =>
-                          removeRecipeFromColumn(column.id, recipe.id)
-                        }
-                      >
-                        ×
-                      </RemoveRecipeButton>
-                    </RecipeHeader>
-                    <RecipeName>{recipe.name}</RecipeName>
-                    <RecipeMacros>
-                      <MacroItem>{recipe.calories} kcal</MacroItem>
-                      <MacroItem>{recipe.protein}g P</MacroItem>
-                      <MacroItem>{recipe.carbs}g C</MacroItem>
-                    </RecipeMacros>
-                  </RecipeCard>
-                ))}
+                  {column.recipes.map((recipe) => (
+                    <RecipeCard key={recipe.id}>
+                      <RecipeHeader>
+                        <RecipeIcon>{recipe.icon}</RecipeIcon>
+                        <RemoveRecipeButton
+                          onClick={() =>
+                            removeRecipeFromColumn(column.id, recipe.id)
+                          }
+                        >
+                          ×
+                        </RemoveRecipeButton>
+                      </RecipeHeader>
+                      <RecipeName>{recipe.name}</RecipeName>
+                      <RecipeMacros>
+                        <MacroItem>{recipe.calories} kcal</MacroItem>
+                        <MacroItem>{recipe.protein}g P</MacroItem>
+                        <MacroItem>{recipe.carbs}g C</MacroItem>
+                      </RecipeMacros>
+                    </RecipeCard>
+                  ))}
 
-                <AddRecipeButton onClick={() => openRecipeModal(column.id)}>
-                  + Add Recipe
-                </AddRecipeButton>
-              </Column>
-            ))}
-          </Table>
+                  <AddRecipeButton onClick={() => openRecipeModal(column.id)}>
+                    + Add Recipe
+                  </AddRecipeButton>
+                </Column>
+              ))}
+            </Table>
+          </div>
         </Flex>
       </TableWrapper>
 
