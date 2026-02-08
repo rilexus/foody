@@ -317,13 +317,13 @@ function Recipe({ id, onClose }) {
   return (
     <RecipeContainer>
       <RecipeHeader>
-        <BackButton
+        {/* <BackButton
           onClick={() => {
             onClose();
           }}
         >
           ← Close
-        </BackButton>
+        </BackButton> */}
         <RecipeTopSection>
           <RecipeIconLarge>{recipe.icon}</RecipeIconLarge>
           <RecipeMainInfo>

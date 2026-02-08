@@ -5,6 +5,7 @@ import { Flex } from "../../ui/Flex";
 import { PageHeader, PageSubtitle, PageTitle } from "../../ui/Page";
 import { CreateRecipe } from "./create";
 import { Recipe } from "./recipe";
+import { PrimaryButton } from "../../ui/Button";
 
 const RecipePanel = styled.div`
   background: white;
@@ -104,20 +105,33 @@ const AddButton = styled.button`
 `;
 
 export const Recipes = () => {
-  const [rec] = useRecipes();
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [recipes] = useRecipes();
+  const [selectedRecipe, setSelectedRecipe] = useState(() => recipes[0]);
 
   return (
     <Flex direction="row">
       <RecipePanel>
-        <Flex justifyContent="space-between">
-          <PageHeader>
-            <PageTitle>Recipes</PageTitle>
-            <PageSubtitle>All recipes in one list</PageSubtitle>
-          </PageHeader>
-        </Flex>
+        <PageHeader>
+          <Flex justifyContent="space-between">
+            <div>
+              <PageTitle>Recipes</PageTitle>
+              <PageSubtitle>All recipes in one list</PageSubtitle>
+            </div>
+            <PrimaryButton
+              onClick={() => setSelectedRecipe(null)}
+              style={{
+                padding: 0,
+                width: "100px",
+                height: "40px",
+              }}
+            >
+              Create
+            </PrimaryButton>
+          </Flex>
+        </PageHeader>
+
         <RecipeGrid>
-          {rec.map((recipe) => {
+          {recipes.map((recipe) => {
             return (
               <RecipeCard
                 key={recipe.id}
