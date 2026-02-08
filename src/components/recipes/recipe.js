@@ -103,9 +103,8 @@ const BackButton = styled.button`
 `;
 
 const RecipeContainer = styled.div`
-  // max-width: 1000px;
   margin: 0 auto;
-  height: 100vh;
+  height: 90vh;
   overflow-y: scroll;
 `;
 
@@ -317,13 +316,6 @@ function Recipe({ id, onClose }) {
   return (
     <RecipeContainer>
       <RecipeHeader>
-        {/* <BackButton
-          onClick={() => {
-            onClose();
-          }}
-        >
-          ← Close
-        </BackButton> */}
         <RecipeTopSection>
           <RecipeIconLarge>{recipe.icon}</RecipeIconLarge>
           <RecipeMainInfo>

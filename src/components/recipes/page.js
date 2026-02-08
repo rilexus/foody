@@ -12,7 +12,7 @@ const RecipePanel = styled.div`
   overflow-y: auto;
   max-width: 400px;
   overflow: scroll;
-  height: 100vh;
+  height: 90vh;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 `;
 

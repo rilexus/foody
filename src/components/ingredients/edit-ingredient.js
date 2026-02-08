@@ -4,11 +4,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { DangerButton } from "../../ui/Button";
 
-const Container = styled.div`
-  min-height: 100vh;
-  // background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #e0e7ff 100%);
-  overflow-y: scroll;
-`;
+const Container = styled.div``;
 
 const Header = styled.div`
   display: flex;

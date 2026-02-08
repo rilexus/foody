@@ -266,13 +266,11 @@ const DetailItem = styled.div`
 
 const SplitViewContainer = styled.div`
   display: flex;
-  height: 100vh;
+  height: 90vh;
   overflow-y: scroll;
 `;
 const SplitView = styled.div`
   flex: 1;
-  height: 100vh;
-  // padding: 32px;
   overflow-y: scroll;
 `;
 export default function IngredientsPage() {

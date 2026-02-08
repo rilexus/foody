@@ -5,7 +5,7 @@ const WeekPanel = styled.div`
   background: linear-gradient(135deg, #bfdbfe 0%, #dbeafe 100%);
   // border-radius: 24px;
   // padding: 32px;
-  height: 100vh;
+  height: 90vh;
   overflow-y: scroll;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 `;
