@@ -443,6 +443,45 @@ const MainContent = styled.div`
   min-width: 0;
 `;
 
+const StatsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 0 32px;
+`;
+
+const StatCard = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const StatLabel = styled.div`
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const StatValue = styled.div`
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+`;
+
+const StatUnit = styled.span`
+  font-size: 14px;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-left: 4px;
+`;
+
 export default function PlannerPage() {
   const [availableRecipes] = useRecipes();
   const [mealPlans, setMealPlans] = useMealPlans();
@@ -473,6 +512,50 @@ export default function PlannerPage() {
       setSelectedPlanId(mealPlans[0]?.id || 0);
     }
   };
+
+  const getRecipeById = (id) => {
+    return availableRecipes.find((r) => r.id === id);
+  };
+
+  // Calculate weekly statistics
+  const calculateWeekStats = () => {
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFat = 0;
+    let totalMeals = 0;
+
+    mealPlans.forEach((plan) => {
+      plan.columns.forEach((column) => {
+        const recipes = column.recipes.map((id) => getRecipeById(id));
+        recipes.forEach((recipe) => {
+          if (recipe) {
+            totalCalories += recipe.calories;
+            totalProtein += recipe.protein;
+            totalCarbs += recipe.carbs;
+            totalFat += recipe.fat;
+            totalMeals += 1;
+          }
+        });
+      });
+    });
+
+    // const daysWithMeals = weekPlan.filter((day) => day.meals.length > 0).length;
+    // const avgCaloriesPerDay =
+    //   daysWithMeals > 0 ? Math.round(totalCalories / daysWithMeals) : 0;
+
+    return {
+      totalMeals,
+      avgCaloriesPerDay: 1,
+      totalProtein,
+      totalCarbs,
+      totalFat,
+      // daysPlanned: daysWithMeals,
+      daysPlanned: 1,
+    };
+  };
+
+  const weekStats = calculateWeekStats();
 
   const addColumn = () => {
     const newId = Date.now();
@@ -576,11 +659,11 @@ export default function PlannerPage() {
               >
                 <PlanListName>{plan.name}</PlanListName>
                 <PlanListDescription>{plan.description}</PlanListDescription>
+
                 <PlanActions>
                   <PlanActionButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      // const newName = prompt("Enter new name:", plan.name);
                       showDialog({
                         title: "Name",
                         message: "Enter a new name for this meal plan",
@@ -595,14 +678,6 @@ export default function PlannerPage() {
                           }
                         },
                       });
-
-                      // if (newName) {
-                      //   setMealPlans(
-                      //     mealPlans.map((p) =>
-                      //       p.id === plan.id ? { ...p, name: newName } : p,
-                      //     ),
-                      //   );
-                      // }
                     }}
                   >
                     Rename
@@ -636,6 +711,47 @@ export default function PlannerPage() {
               <TableTitle>{selectedPlan?.name || "Meal Plan"}</TableTitle>
               <AddColumnButton onClick={addColumn}>+ Add Plan</AddColumnButton>
             </TableHeader>
+            <StatsContainer>
+              <StatCard>
+                <StatLabel>Total Meals</StatLabel>
+                <StatValue>{weekStats.totalMeals}</StatValue>
+              </StatCard>
+              <StatCard>
+                <StatLabel>Avg Cal/Day</StatLabel>
+                <StatValue>
+                  {weekStats.avgCaloriesPerDay}
+                  <StatUnit>kcal</StatUnit>
+                </StatValue>
+              </StatCard>
+              <StatCard>
+                <StatLabel>Protein</StatLabel>
+                <StatValue>
+                  {weekStats.totalProtein}
+                  <StatUnit>g</StatUnit>
+                </StatValue>
+              </StatCard>
+              <StatCard>
+                <StatLabel>Carbs</StatLabel>
+                <StatValue>
+                  {weekStats.totalCarbs}
+                  <StatUnit>g</StatUnit>
+                </StatValue>
+              </StatCard>
+              <StatCard>
+                <StatLabel>Fat</StatLabel>
+                <StatValue>
+                  {weekStats.totalFat}
+                  <StatUnit>g</StatUnit>
+                </StatValue>
+              </StatCard>
+              <StatCard>
+                <StatLabel>Days Planned</StatLabel>
+                <StatValue>
+                  {weekStats.daysPlanned}
+                  <StatUnit>/ 7</StatUnit>
+                </StatValue>
+              </StatCard>
+            </StatsContainer>
             <Table>
               {columns.map((column) => (
                 <Column key={column.id}>
