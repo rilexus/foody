@@ -345,6 +345,27 @@ export const defaultState = {
     accentColor: "#f97316",
   },
   ingredients: ingredients,
+  mealPlans: [
+    {
+      id: 1,
+      name: "Weekly Plan",
+      description: "My standard weekly meal plan",
+      columns: [
+        { id: 1, name: "Monday", recipes: [] },
+        { id: 2, name: "Tuesday", recipes: [] },
+        { id: 3, name: "Wednesday", recipes: [] },
+      ],
+    },
+    {
+      id: 2,
+      name: "Keto Plan",
+      description: "Low carb high fat meal plan",
+      columns: [
+        { id: 4, name: "Day 1", recipes: [] },
+        { id: 5, name: "Day 2", recipes: [] },
+      ],
+    },
+  ],
   shopingList,
   recipes: [
     {

@@ -2,8 +2,9 @@
 import React from "react";
 import styled from "styled-components";
 import { useState } from "react";
-import { PageHeader, PageSubtitle, PageTitle } from "../../ui/Page";
 import { Flex } from "../../ui/Flex";
+import { useRecipes } from "../../hooks/use-recipes";
+import { useMealPlans } from "../../hooks/use-meal-plans";
 
 const Container = styled.div`
   height: 90vh;
@@ -442,28 +443,8 @@ const MainContent = styled.div`
 `;
 
 export default function PlannerPage() {
-  const router = {};
-  const [mealPlans, setMealPlans] = useState([
-    {
-      id: 1,
-      name: "Weekly Plan",
-      description: "My standard weekly meal plan",
-      columns: [
-        { id: 1, name: "Monday", recipes: [] },
-        { id: 2, name: "Tuesday", recipes: [] },
-        { id: 3, name: "Wednesday", recipes: [] },
-      ],
-    },
-    {
-      id: 2,
-      name: "Keto Plan",
-      description: "Low carb high fat meal plan",
-      columns: [
-        { id: 4, name: "Day 1", recipes: [] },
-        { id: 5, name: "Day 2", recipes: [] },
-      ],
-    },
-  ]);
+  const [availableRecipes, setRecipes] = useRecipes();
+  const [mealPlans, setMealPlans] = useMealPlans();
 
   const [selectedPlanId, setSelectedPlanId] = useState(1);
   const selectedPlan =
@@ -491,88 +472,88 @@ export default function PlannerPage() {
     }
   };
 
-  const availableRecipes = [
-    {
-      id: 1,
-      name: "Oatmeal & Berries",
-      icon: "🥣",
-      calories: 320,
-      protein: 12,
-      carbs: 54,
-      fat: 8,
-      time: 10,
-    },
-    {
-      id: 2,
-      name: "Avocado Toast",
-      icon: "🥑",
-      calories: 280,
-      protein: 10,
-      carbs: 36,
-      fat: 14,
-      time: 5,
-    },
-    {
-      id: 3,
-      name: "Grilled Chicken Breast",
-      icon: "🍗",
-      calories: 380,
-      protein: 45,
-      carbs: 5,
-      fat: 18,
-      time: 25,
-    },
-    {
-      id: 4,
-      name: "Salmon with Vegetables",
-      icon: "🐟",
-      calories: 420,
-      protein: 38,
-      carbs: 12,
-      fat: 25,
-      time: 30,
-    },
-    {
-      id: 5,
-      name: "Quinoa Power Bowl",
-      icon: "🍲",
-      calories: 360,
-      protein: 18,
-      carbs: 48,
-      fat: 12,
-      time: 20,
-    },
-    {
-      id: 6,
-      name: "Smoothie Bowl",
-      icon: "🥤",
-      calories: 290,
-      protein: 22,
-      carbs: 38,
-      fat: 6,
-      time: 8,
-    },
-    {
-      id: 7,
-      name: "Turkey Sandwich",
-      icon: "🥪",
-      calories: 340,
-      protein: 28,
-      carbs: 42,
-      fat: 9,
-      time: 10,
-    },
-    {
-      id: 8,
-      name: "Greek Yogurt Parfait",
-      icon: "🥛",
-      calories: 250,
-      protein: 20,
-      carbs: 32,
-      fat: 6,
-      time: 5,
-    },
-  ];
+  // const availableRecipes = [
+  //   {
+  //     id: 1,
+  //     name: "Oatmeal & Berries",
+  //     icon: "🥣",
+  //     calories: 320,
+  //     protein: 12,
+  //     carbs: 54,
+  //     fat: 8,
+  //     time: 10,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Avocado Toast",
+  //     icon: "🥑",
+  //     calories: 280,
+  //     protein: 10,
+  //     carbs: 36,
+  //     fat: 14,
+  //     time: 5,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Grilled Chicken Breast",
+  //     icon: "🍗",
+  //     calories: 380,
+  //     protein: 45,
+  //     carbs: 5,
+  //     fat: 18,
+  //     time: 25,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Salmon with Vegetables",
+  //     icon: "🐟",
+  //     calories: 420,
+  //     protein: 38,
+  //     carbs: 12,
+  //     fat: 25,
+  //     time: 30,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Quinoa Power Bowl",
+  //     icon: "🍲",
+  //     calories: 360,
+  //     protein: 18,
+  //     carbs: 48,
+  //     fat: 12,
+  //     time: 20,
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Smoothie Bowl",
+  //     icon: "🥤",
+  //     calories: 290,
+  //     protein: 22,
+  //     carbs: 38,
+  //     fat: 6,
+  //     time: 8,
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Turkey Sandwich",
+  //     icon: "🥪",
+  //     calories: 340,
+  //     protein: 28,
+  //     carbs: 42,
+  //     fat: 9,
+  //     time: 10,
+  //   },
+  //   {
+  //     id: 8,
+  //     name: "Greek Yogurt Parfait",
+  //     icon: "🥛",
+  //     calories: 250,
+  //     protein: 20,
+  //     carbs: 32,
+  //     fat: 6,
+  //     time: 5,
+  //   },
+  // ];
 
   const addColumn = () => {
     const newId = Date.now();
