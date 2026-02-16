@@ -8,6 +8,7 @@ import SettingsPage from "./components/settings/page";
 import IngredientsPage from "./components/ingredients/page";
 import ShoppingListPage from "./components/shoping-list/page";
 import PlannerPage from "./components/planner/page";
+import Layout from "./components/Layout";
 
 const Container = styled.div`
   display: flex;
@@ -93,36 +94,38 @@ const MainContent = styled.main`
 
 function App() {
   return (
-    <HashRouter>
-      <Container>
-        <TopBar>
-          <Logo>
-            <LogoIcon>🍽️</LogoIcon>
-            <LogoText>Foody</LogoText>
-          </Logo>
+    <Layout>
+      <HashRouter>
+        <Container>
+          <TopBar>
+            <Logo>
+              <LogoIcon>🍽️</LogoIcon>
+              <LogoText>Foody</LogoText>
+            </Logo>
 
-          <TabsContainer>
-            <NavItem to="/">Home</NavItem>
-            <NavItem to="/shopping-list">🛒 Shopping List</NavItem>
-            <NavItem to="/recipes">Recipes</NavItem>
-            <NavItem to="/ingredients">Ingredients</NavItem>
-            <NavItem to="/planner">🗓️ Planner</NavItem>
-            <NavItem to="/settings">⚙️ Settings</NavItem>
-          </TabsContainer>
-        </TopBar>
+            <TabsContainer>
+              <NavItem to="/">Home</NavItem>
+              <NavItem to="/shopping-list">🛒 Shopping List</NavItem>
+              <NavItem to="/recipes">Recipes</NavItem>
+              <NavItem to="/ingredients">Ingredients</NavItem>
+              <NavItem to="/planner">🗓️ Planner</NavItem>
+              <NavItem to="/settings">⚙️ Settings</NavItem>
+            </TabsContainer>
+          </TopBar>
 
-        <MainContent>
-          <Routes>
-            <Route path="/" element={<div>Home</div>} />
-            <Route path="/recipes" element={<Recipes />} />
-            <Route path="/ingredients" element={<IngredientsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/shopping-list" element={<ShoppingListPage />} />
-            <Route path="/planner" element={<PlannerPage />} />
-          </Routes>
-        </MainContent>
-      </Container>
-    </HashRouter>
+          <MainContent>
+            <Routes>
+              <Route path="/" element={<div>Home</div>} />
+              <Route path="/recipes" element={<Recipes />} />
+              <Route path="/ingredients" element={<IngredientsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/shopping-list" element={<ShoppingListPage />} />
+              <Route path="/planner" element={<PlannerPage />} />
+            </Routes>
+          </MainContent>
+        </Container>
+      </HashRouter>
+    </Layout>
   );
 }
 

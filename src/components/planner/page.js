@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Flex } from "../../ui/Flex";
 import { useRecipes } from "../../hooks/use-recipes";
 import { useMealPlans } from "../../hooks/use-meal-plans";
+import { useDialog } from "../../ui/Prompt";
 
 const Container = styled.div`
   height: 90vh;
@@ -443,8 +444,9 @@ const MainContent = styled.div`
 `;
 
 export default function PlannerPage() {
-  const [availableRecipes, setRecipes] = useRecipes();
+  const [availableRecipes] = useRecipes();
   const [mealPlans, setMealPlans] = useMealPlans();
+  const { showDialog } = useDialog();
 
   const [selectedPlanId, setSelectedPlanId] = useState(1);
   const selectedPlan =
@@ -471,89 +473,6 @@ export default function PlannerPage() {
       setSelectedPlanId(mealPlans[0]?.id || 0);
     }
   };
-
-  // const availableRecipes = [
-  //   {
-  //     id: 1,
-  //     name: "Oatmeal & Berries",
-  //     icon: "🥣",
-  //     calories: 320,
-  //     protein: 12,
-  //     carbs: 54,
-  //     fat: 8,
-  //     time: 10,
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Avocado Toast",
-  //     icon: "🥑",
-  //     calories: 280,
-  //     protein: 10,
-  //     carbs: 36,
-  //     fat: 14,
-  //     time: 5,
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Grilled Chicken Breast",
-  //     icon: "🍗",
-  //     calories: 380,
-  //     protein: 45,
-  //     carbs: 5,
-  //     fat: 18,
-  //     time: 25,
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Salmon with Vegetables",
-  //     icon: "🐟",
-  //     calories: 420,
-  //     protein: 38,
-  //     carbs: 12,
-  //     fat: 25,
-  //     time: 30,
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Quinoa Power Bowl",
-  //     icon: "🍲",
-  //     calories: 360,
-  //     protein: 18,
-  //     carbs: 48,
-  //     fat: 12,
-  //     time: 20,
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "Smoothie Bowl",
-  //     icon: "🥤",
-  //     calories: 290,
-  //     protein: 22,
-  //     carbs: 38,
-  //     fat: 6,
-  //     time: 8,
-  //   },
-  //   {
-  //     id: 7,
-  //     name: "Turkey Sandwich",
-  //     icon: "🥪",
-  //     calories: 340,
-  //     protein: 28,
-  //     carbs: 42,
-  //     fat: 9,
-  //     time: 10,
-  //   },
-  //   {
-  //     id: 8,
-  //     name: "Greek Yogurt Parfait",
-  //     icon: "🥛",
-  //     calories: 250,
-  //     protein: 20,
-  //     carbs: 32,
-  //     fat: 6,
-  //     time: 5,
-  //   },
-  // ];
 
   const addColumn = () => {
     const newId = Date.now();
@@ -661,14 +580,29 @@ export default function PlannerPage() {
                   <PlanActionButton
                     onClick={(e) => {
                       e.stopPropagation();
-                      const newName = prompt("Enter new name:", plan.name);
-                      if (newName) {
-                        setMealPlans(
-                          mealPlans.map((p) =>
-                            p.id === plan.id ? { ...p, name: newName } : p,
-                          ),
-                        );
-                      }
+                      // const newName = prompt("Enter new name:", plan.name);
+                      showDialog({
+                        title: "Name",
+                        message: "Enter a new name for this meal plan",
+                        defaultValue: plan.name,
+                        onConfirm: (newName) => {
+                          if (newName.trim()) {
+                            setMealPlans(
+                              mealPlans.map((p) =>
+                                p.id === plan.id ? { ...p, name: newName } : p,
+                              ),
+                            );
+                          }
+                        },
+                      });
+
+                      // if (newName) {
+                      //   setMealPlans(
+                      //     mealPlans.map((p) =>
+                      //       p.id === plan.id ? { ...p, name: newName } : p,
+                      //     ),
+                      //   );
+                      // }
                     }}
                   >
                     Rename
