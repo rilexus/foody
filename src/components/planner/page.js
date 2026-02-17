@@ -9,7 +9,9 @@ import { useDialog } from "../../ui/Prompt";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 
-const Container = styled.div``;
+const Container = styled.div`
+  background: white;
+`;
 
 const TableHeader = styled.div`
   display: flex;
@@ -48,8 +50,6 @@ const Table = styled.div`
   flex-direction: row;
   gap: 20px;
   flex: 1;
-  // min-height: 500px;
-  // overflow-x: scroll;
 `;
 
 const Column = styled.div`
