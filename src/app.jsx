@@ -13,9 +13,7 @@ import Layout from "./components/Layout";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-
   height: 100vh;
-  overflow: hidden;
 
   background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
   font-family:
@@ -27,7 +25,12 @@ const TopBar = styled.header`
   background: white;
   border-bottom: 1px solid #e5e7eb;
   padding: 0 32px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
+  z-index: 100;
   align-items: center;
   gap: 48px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -86,10 +89,15 @@ const NavItem = styled(Link)`
   }
 `;
 
-const MainContent = styled.main`
+const Main = styled.main`
   flex: 1;
-  // display: flex;
-  // overflow: hidden;
+  margin-top: 70px;
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+`;
+
+const Content = styled.div`
+  min-height: 100%;
 `;
 
 function App() {
@@ -113,16 +121,18 @@ function App() {
             </TabsContainer>
           </TopBar>
 
-          <MainContent>
-            <Routes>
-              <Route path="/" element={<div>Home</div>} />
-              <Route path="/recipes" element={<Recipes />} />
-              <Route path="/ingredients" element={<IngredientsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/shopping-list" element={<ShoppingListPage />} />
-              <Route path="/planner" element={<PlannerPage />} />
-            </Routes>
-          </MainContent>
+          <Main>
+            <Content>
+              <Routes>
+                <Route path="/" element={<div>Home</div>} />
+                <Route path="/recipes" element={<Recipes />} />
+                <Route path="/ingredients" element={<IngredientsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/shopping-list" element={<ShoppingListPage />} />
+                <Route path="/planner" element={<PlannerPage />} />
+              </Routes>
+            </Content>
+          </Main>
         </Container>
       </HashRouter>
     </Layout>

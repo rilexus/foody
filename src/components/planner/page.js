@@ -6,52 +6,10 @@ import { Flex } from "../../ui/Flex";
 import { useRecipes } from "../../hooks/use-recipes";
 import { useMealPlans } from "../../hooks/use-meal-plans";
 import { useDialog } from "../../ui/Prompt";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 
-const Container = styled.div`
-  height: 90vh;
-  overflow-y: scroll;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-`;
-
-const Title = styled.h1`
-  font-size: 32px;
-  font-weight: 700;
-  color: white;
-  margin: 0;
-`;
-
-const BackButton = styled.button`
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-1px);
-  }
-`;
-
-const TableWrapper = styled.div`
-  background: white;
-
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  overflow-x: auto;
-  height: 100vh;
-`;
+const Container = styled.div``;
 
 const TableHeader = styled.div`
   display: flex;
@@ -87,14 +45,14 @@ const AddColumnButton = styled.button`
 
 const Table = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 20px;
   flex: 1;
-  min-height: 500px;
+  // min-height: 500px;
+  // overflow-x: scroll;
 `;
 
 const Column = styled.div`
-  min-width: 280px;
   background: #f9fafb;
   border-radius: 16px;
   padding: 20px;
@@ -104,9 +62,9 @@ const Column = styled.div`
 `;
 
 const ColumnHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  // display: flex;
+  // justify-content: space-between;
+  // align-items: center;
   margin-bottom: 8px;
 `;
 
@@ -167,7 +125,7 @@ const RecipeHeader = styled.div`
 `;
 
 const RecipeIcon = styled.div`
-  font-size: 32px;
+  font-size: 24px;
 `;
 
 const RemoveRecipeButton = styled.button`
@@ -311,7 +269,7 @@ const RecipeListItem = styled.div`
 `;
 
 const RecipeListIcon = styled.div`
-  font-size: 32px;
+  font-size: 12px;
 `;
 
 const RecipeListInfo = styled.div`
@@ -338,15 +296,13 @@ const ContentLayout = styled.div`
 `;
 
 const Sidebar = styled.div`
-  width: 320px;
   background: white;
-  // border-radius: 20px;
-  padding: 24px;
-  // box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-height: calc(100vh - 140px);
+  width: 220px;
+  height: calc(100vh - 70px);
+  padding: 0 24px;
   overflow-y: auto;
 `;
 
@@ -481,6 +437,88 @@ const StatUnit = styled.span`
   font-weight: 500;
   margin-left: 4px;
 `;
+
+const SplitViewContainer = styled.div`
+  display: flex;
+  height: 90vh;
+  overflow-y: scroll;
+`;
+
+const SplitView = styled.div`
+  flex: 1;
+  overflow-y: scroll;
+`;
+
+const Recipe = ({ recipe }) => {
+  const [collected, drag, dragPreview] = useDrag(() => ({
+    type: "recipe",
+    item: { id: recipe.id },
+    collect: (monitor) => ({
+      previewStyle: {
+        style: {
+          opacity: monitor.isDragging() ? 0.1 : 1,
+        },
+      },
+      isDragging: monitor.isDragging(),
+    }),
+  }));
+
+  return !collected.isDragging ? (
+    <RecipeCard ref={drag}>
+      <RecipeHeader>
+        <RecipeIcon>{recipe.icon}</RecipeIcon>
+        <RemoveRecipeButton
+          onClick={() => removeRecipeFromColumn(column.id, recipe.id)}
+        >
+          ×
+        </RemoveRecipeButton>
+      </RecipeHeader>
+      <RecipeName>{recipe.name}</RecipeName>
+      <RecipeMacros>
+        <MacroItem>{recipe.calories} kcal</MacroItem>
+        <MacroItem>{recipe.protein}g P</MacroItem>
+        <MacroItem>{recipe.carbs}g C</MacroItem>
+      </RecipeMacros>
+    </RecipeCard>
+  ) : (
+    <RecipeCard ref={dragPreview} {...collected.previewStyle}>
+      <RecipeHeader>
+        <RecipeIcon>{recipe.icon}</RecipeIcon>
+        <RemoveRecipeButton
+          onClick={() => removeRecipeFromColumn(column.id, recipe.id)}
+        >
+          ×
+        </RemoveRecipeButton>
+      </RecipeHeader>
+      <RecipeName>{recipe.name}</RecipeName>
+      <RecipeMacros>
+        <MacroItem>{recipe.calories} kcal</MacroItem>
+        <MacroItem>{recipe.protein}g P</MacroItem>
+        <MacroItem>{recipe.carbs}g C</MacroItem>
+      </RecipeMacros>
+    </RecipeCard>
+  );
+};
+
+const RecipeDropColumn = ({ children }) => {
+  const [collectedProps, drop] = useDrop(() => ({
+    accept: ["recipe"],
+    collect: (monitor) => {
+      return {
+        dropStyle: {
+          style: {
+            outline: monitor.isOver() ? "2px solid blue" : null,
+          },
+        },
+      };
+    },
+  }));
+  return (
+    <Column {...collectedProps.dropStyle} ref={drop}>
+      {children}
+    </Column>
+  );
+};
 
 export default function PlannerPage() {
   const [availableRecipes] = useRecipes();
@@ -640,8 +678,8 @@ export default function PlannerPage() {
   };
 
   return (
-    <Container>
-      <TableWrapper>
+    <DndProvider backend={HTML5Backend}>
+      <Container>
         <Flex>
           <Sidebar>
             <SidebarHeader>
@@ -697,12 +735,12 @@ export default function PlannerPage() {
               </PlanListItem>
             ))}
           </Sidebar>
-
           <div
             style={{
-              height: "90vh",
               overflowY: "scroll",
               flex: 1,
+              height: "calc(100vh - 70px)",
+
               display: "flex",
               flexDirection: "column",
             }}
@@ -754,7 +792,7 @@ export default function PlannerPage() {
             </StatsContainer>
             <Table>
               {columns.map((column) => (
-                <Column key={column.id}>
+                <RecipeDropColumn key={column.id}>
                   <ColumnHeader>
                     <ColumnNameInput
                       value={column.name}
@@ -769,66 +807,49 @@ export default function PlannerPage() {
                   </ColumnHeader>
 
                   {column.recipes.map((recipe) => (
-                    <RecipeCard key={recipe.id}>
-                      <RecipeHeader>
-                        <RecipeIcon>{recipe.icon}</RecipeIcon>
-                        <RemoveRecipeButton
-                          onClick={() =>
-                            removeRecipeFromColumn(column.id, recipe.id)
-                          }
-                        >
-                          ×
-                        </RemoveRecipeButton>
-                      </RecipeHeader>
-                      <RecipeName>{recipe.name}</RecipeName>
-                      <RecipeMacros>
-                        <MacroItem>{recipe.calories} kcal</MacroItem>
-                        <MacroItem>{recipe.protein}g P</MacroItem>
-                        <MacroItem>{recipe.carbs}g C</MacroItem>
-                      </RecipeMacros>
-                    </RecipeCard>
+                    <Recipe recipe={recipe} key={recipe.id} />
                   ))}
 
                   <AddRecipeButton onClick={() => openRecipeModal(column.id)}>
                     + Add Recipe
                   </AddRecipeButton>
-                </Column>
+                </RecipeDropColumn>
               ))}
             </Table>
           </div>
         </Flex>
-      </TableWrapper>
 
-      {showRecipeModal && (
-        <RecipeSelectionModal onClick={() => setShowRecipeModal(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <ModalHeader>
-              <ModalTitle>Select a Recipe</ModalTitle>
-              <CloseButton onClick={() => setShowRecipeModal(false)}>
-                ×
-              </CloseButton>
-            </ModalHeader>
+        {showRecipeModal && (
+          <RecipeSelectionModal onClick={() => setShowRecipeModal(false)}>
+            <ModalContent onClick={(e) => e.stopPropagation()}>
+              <ModalHeader>
+                <ModalTitle>Select a Recipe</ModalTitle>
+                <CloseButton onClick={() => setShowRecipeModal(false)}>
+                  ×
+                </CloseButton>
+              </ModalHeader>
 
-            <RecipeList>
-              {availableRecipes.map((recipe) => (
-                <RecipeListItem
-                  key={recipe.id}
-                  onClick={() => addRecipeToColumn(recipe)}
-                >
-                  <RecipeListIcon>{recipe.icon}</RecipeListIcon>
-                  <RecipeListInfo>
-                    <RecipeListName>{recipe.name}</RecipeListName>
-                    <RecipeListMacros>
-                      {recipe.calories} kcal • {recipe.protein}g protein •{" "}
-                      {recipe.carbs}g carbs • {recipe.time} min
-                    </RecipeListMacros>
-                  </RecipeListInfo>
-                </RecipeListItem>
-              ))}
-            </RecipeList>
-          </ModalContent>
-        </RecipeSelectionModal>
-      )}
-    </Container>
+              <RecipeList>
+                {availableRecipes.map((recipe) => (
+                  <RecipeListItem
+                    key={recipe.id}
+                    onClick={() => addRecipeToColumn(recipe)}
+                  >
+                    <RecipeListIcon>{recipe.icon}</RecipeListIcon>
+                    <RecipeListInfo>
+                      <RecipeListName>{recipe.name}</RecipeListName>
+                      <RecipeListMacros>
+                        {recipe.calories} kcal • {recipe.protein}g protein •{" "}
+                        {recipe.carbs}g carbs • {recipe.time} min
+                      </RecipeListMacros>
+                    </RecipeListInfo>
+                  </RecipeListItem>
+                ))}
+              </RecipeList>
+            </ModalContent>
+          </RecipeSelectionModal>
+        )}
+      </Container>
+    </DndProvider>
   );
 }

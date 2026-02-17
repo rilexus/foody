@@ -273,6 +273,7 @@ const SplitView = styled.div`
   flex: 1;
   overflow-y: scroll;
 `;
+
 export default function IngredientsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
