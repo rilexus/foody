@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { Flex } from "../../ui/Flex";
@@ -50,6 +50,7 @@ const Table = styled.div`
   flex-direction: row;
   gap: 20px;
   flex: 1;
+  padding: 5px;
 `;
 
 const Column = styled.div`
@@ -449,7 +450,7 @@ const SplitView = styled.div`
   overflow-y: scroll;
 `;
 
-const Recipe = ({ recipe }) => {
+const Recipe = ({ recipe, removeRecipeFromColumn }) => {
   const [collected, drag, dragPreview] = useDrag(() => ({
     type: "recipe",
     item: { id: recipe.id },
@@ -467,9 +468,7 @@ const Recipe = ({ recipe }) => {
     <RecipeCard ref={drag}>
       <RecipeHeader>
         <RecipeIcon>{recipe.icon}</RecipeIcon>
-        <RemoveRecipeButton
-          onClick={() => removeRecipeFromColumn(column.id, recipe.id)}
-        >
+        <RemoveRecipeButton onClick={() => removeRecipeFromColumn(recipe.id)}>
           ×
         </RemoveRecipeButton>
       </RecipeHeader>
@@ -500,9 +499,12 @@ const Recipe = ({ recipe }) => {
   );
 };
 
-const RecipeDropColumn = ({ children }) => {
+const RecipeDropColumn = ({ children, onDrop }) => {
   const [collectedProps, drop] = useDrop(() => ({
     accept: ["recipe"],
+    drop: (item, monitor) => {
+      onDrop(item);
+    },
     collect: (monitor) => {
       return {
         dropStyle: {
@@ -520,12 +522,22 @@ const RecipeDropColumn = ({ children }) => {
   );
 };
 
+const Main = styled.div`
+  overflow-y: scroll;
+  overflow-x: hidden;
+  flex: 1;
+  height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+`;
+
 export default function PlannerPage() {
   const [availableRecipes] = useRecipes();
   const [mealPlans, setMealPlans] = useMealPlans();
   const { showDialog } = useDialog();
 
   const [selectedPlanId, setSelectedPlanId] = useState(1);
+
   const selectedPlan =
     mealPlans.find((p) => p.id === selectedPlanId) || mealPlans[0];
   const columns = selectedPlan?.columns || [];
@@ -556,44 +568,47 @@ export default function PlannerPage() {
   };
 
   // Calculate weekly statistics
-  const calculateWeekStats = () => {
+  const calculateWeekStats = (mealPlans, selectedPlanId) => {
     let totalCalories = 0;
     let totalProtein = 0;
     let totalCarbs = 0;
     let totalFat = 0;
     let totalMeals = 0;
 
-    mealPlans.forEach((plan) => {
-      plan.columns.forEach((column) => {
-        const recipes = column.recipes.map((id) => getRecipeById(id));
-        recipes.forEach((recipe) => {
-          if (recipe) {
-            totalCalories += recipe.calories;
-            totalProtein += recipe.protein;
-            totalCarbs += recipe.carbs;
-            totalFat += recipe.fat;
-            totalMeals += 1;
-          }
-        });
+    const selectedMealPlan =
+      mealPlans.find((p) => p.id === selectedPlanId) || mealPlans[0];
+
+    selectedMealPlan.columns.forEach((column) => {
+      const recipes = column.recipes.map((id) => getRecipeById(id));
+      recipes.forEach((recipe) => {
+        if (recipe) {
+          totalCalories += recipe.calories;
+          totalProtein += recipe.protein;
+          totalCarbs += recipe.carbs;
+          totalFat += recipe.fat;
+          totalMeals += 1;
+        }
       });
     });
 
-    // const daysWithMeals = weekPlan.filter((day) => day.meals.length > 0).length;
-    // const avgCaloriesPerDay =
-    //   daysWithMeals > 0 ? Math.round(totalCalories / daysWithMeals) : 0;
+    const daysWithMeals = selectedMealPlan.columns.filter(
+      (day) => day.recipes.length > 0,
+    ).length;
+    const avgCaloriesPerDay =
+      daysWithMeals > 0 ? Math.round(totalCalories / daysWithMeals) : 0;
 
     return {
+      totalDays: selectedMealPlan.columns.length,
       totalMeals,
-      avgCaloriesPerDay: 1,
+      avgCaloriesPerDay,
       totalProtein,
       totalCarbs,
       totalFat,
-      // daysPlanned: daysWithMeals,
-      daysPlanned: 1,
+      daysPlanned: daysWithMeals,
     };
   };
 
-  const weekStats = calculateWeekStats();
+  const weekStats = calculateWeekStats(mealPlans, selectedPlanId);
 
   const addColumn = () => {
     const newId = Date.now();
@@ -642,17 +657,15 @@ export default function PlannerPage() {
     setShowRecipeModal(true);
   };
 
-  const addRecipeToColumn = (recipe) => {
-    if (selectedColumnId === null) return;
-
+  const addRecipeToColumn = (columnId, recipeId) => {
     setMealPlans(
       mealPlans.map((p) => {
         if (p.id === selectedPlanId) {
           return {
             ...p,
             columns: p.columns.map((c) => {
-              if (c.id === selectedColumnId) {
-                return { ...c, recipes: [...c.recipes, recipe] };
+              if (c.id === columnId) {
+                return { ...c, recipes: [...c.recipes, recipeId] };
               }
               return c;
             }),
@@ -667,13 +680,22 @@ export default function PlannerPage() {
   };
 
   const removeRecipeFromColumn = (columnId, recipeId) => {
-    setColumns(
-      columns.map((c) => {
-        if (c.id === columnId) {
-          return { ...c, recipes: c.recipes.filter((r) => r.id !== recipeId) };
-        }
-        return c;
-      }),
+    setMealPlans((prevMealPlans) =>
+      prevMealPlans.map((plan) =>
+        plan.id === selectedPlanId
+          ? {
+              ...plan,
+              columns: plan.columns.map((c) =>
+                c.id === columnId
+                  ? {
+                      ...c,
+                      recipes: c.recipes.filter((id) => id !== recipeId),
+                    }
+                  : c,
+              ),
+            }
+          : plan,
+      ),
     );
   };
 
@@ -735,16 +757,7 @@ export default function PlannerPage() {
               </PlanListItem>
             ))}
           </Sidebar>
-          <div
-            style={{
-              overflowY: "scroll",
-              flex: 1,
-              height: "calc(100vh - 70px)",
-
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <Main>
             <TableHeader>
               <TableTitle>{selectedPlan?.name || "Meal Plan"}</TableTitle>
               <AddColumnButton onClick={addColumn}>+ Add Plan</AddColumnButton>
@@ -786,37 +799,55 @@ export default function PlannerPage() {
                 <StatLabel>Days Planned</StatLabel>
                 <StatValue>
                   {weekStats.daysPlanned}
-                  <StatUnit>/ 7</StatUnit>
+                  <StatUnit>/{weekStats.totalDays}</StatUnit>
                 </StatValue>
               </StatCard>
             </StatsContainer>
-            <Table>
-              {columns.map((column) => (
-                <RecipeDropColumn key={column.id}>
-                  <ColumnHeader>
-                    <ColumnNameInput
-                      value={column.name}
-                      onChange={(e) =>
-                        updateColumnName(column.id, e.target.value)
-                      }
-                      placeholder="Plan name"
-                    />
-                    <RemoveColumnButton onClick={() => removeColumn(column.id)}>
-                      Remove
-                    </RemoveColumnButton>
-                  </ColumnHeader>
+            <div>
+              <Table style={{ overflowX: "scroll" }}>
+                {columns.map((column, i) => (
+                  <RecipeDropColumn
+                    key={`${column.id}-${i}`}
+                    onDrop={(recipe) => {
+                      addRecipeToColumn(column.id, recipe.id);
+                    }}
+                  >
+                    <ColumnHeader>
+                      <ColumnNameInput
+                        value={column.name}
+                        onChange={(e) =>
+                          updateColumnName(column.id, e.target.value)
+                        }
+                        placeholder="Plan name"
+                      />
+                      <RemoveColumnButton
+                        onClick={() => removeColumn(column.id)}
+                      >
+                        Remove
+                      </RemoveColumnButton>
+                    </ColumnHeader>
 
-                  {column.recipes.map((recipe) => (
-                    <Recipe recipe={recipe} key={recipe.id} />
-                  ))}
+                    {column.recipes.map((id, i) => {
+                      const recipe = availableRecipes.find((r) => r.id === id);
+                      return (
+                        <Recipe
+                          recipe={recipe}
+                          key={`${id}-${i}`}
+                          removeRecipeFromColumn={() =>
+                            removeRecipeFromColumn(column.id, recipe.id)
+                          }
+                        />
+                      );
+                    })}
 
-                  <AddRecipeButton onClick={() => openRecipeModal(column.id)}>
-                    + Add Recipe
-                  </AddRecipeButton>
-                </RecipeDropColumn>
-              ))}
-            </Table>
-          </div>
+                    <AddRecipeButton onClick={() => openRecipeModal(column.id)}>
+                      + Add Recipe
+                    </AddRecipeButton>
+                  </RecipeDropColumn>
+                ))}
+              </Table>
+            </div>
+          </Main>
         </Flex>
 
         {showRecipeModal && (
@@ -833,7 +864,9 @@ export default function PlannerPage() {
                 {availableRecipes.map((recipe) => (
                   <RecipeListItem
                     key={recipe.id}
-                    onClick={() => addRecipeToColumn(recipe)}
+                    onClick={() =>
+                      addRecipeToColumn(selectedColumnId, recipe.id)
+                    }
                   >
                     <RecipeListIcon>{recipe.icon}</RecipeListIcon>
                     <RecipeListInfo>

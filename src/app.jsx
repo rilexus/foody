@@ -124,7 +124,7 @@ function App() {
           <Main>
             <Content>
               <Routes>
-                <Route path="/" element={<div>Home</div>} />
+                <Route path="/" element={<div>home</div>} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/ingredients" element={<IngredientsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

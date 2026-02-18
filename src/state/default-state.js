@@ -336,14 +336,9 @@ const ingredients = [
 ];
 
 export const defaultState = {
+  version: "1.0.0",
   apiEndpoint: "https://api.dietplanner.com/v1",
-  syncInterval: 300,
-  maxRecipesPerPage: 20,
-  enableAnalytics: true,
-  theme: {
-    primaryColor: "#0284c7",
-    accentColor: "#f97316",
-  },
+  syncInterval: 3000,
   ingredients: ingredients,
   mealPlans: [
     {
