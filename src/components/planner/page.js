@@ -8,6 +8,9 @@ import { useMealPlans } from "../../hooks/use-meal-plans";
 import { useDialog } from "../../ui/Prompt";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { calcWeeklyShoppingList } from "../../utils/calcWeeklyShoppingList";
+import { useApplicationState } from "../../hooks/use-application-state";
+import { ShoppingList } from "./components/ShoppingList";
 
 const Container = styled.div`
   background: white;
@@ -304,6 +307,7 @@ const Sidebar = styled.div`
   width: 220px;
   height: calc(100vh - 70px);
   padding: 0 24px;
+  padding-top: 24px;
   overflow-y: auto;
 `;
 
@@ -529,6 +533,9 @@ const Main = styled.div`
   height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 export default function PlannerPage() {
@@ -848,6 +855,7 @@ export default function PlannerPage() {
               </Table>
             </div>
           </Main>
+          <ShoppingList mealPlanId={selectedPlanId} />
         </Flex>
 
         {showRecipeModal && (

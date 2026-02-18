@@ -379,7 +379,7 @@ export default function EditIngredientPage({
                 type="text"
                 placeholder="e.g., 100g"
                 value={servingSize}
-                onChange={(e) => setServingSize(e.target.value)}
+                onChange={(e) => setServingSize(e.target.valueAsNumber)}
               />
             </FormField>
           </FormGrid>
@@ -394,7 +394,7 @@ export default function EditIngredientPage({
                 type="number"
                 placeholder="0"
                 value={calories}
-                onChange={(e) => setCalories(e.target.value)}
+                onChange={(e) => setCalories(e.target.valueAsNumber)}
               />
             </FormField>
 
@@ -404,7 +404,7 @@ export default function EditIngredientPage({
                 type="number"
                 placeholder="0"
                 value={protein}
-                onChange={(e) => setProtein(e.target.value)}
+                onChange={(e) => setProtein(e.target.valueAsNumber)}
               />
             </FormField>
 
@@ -414,7 +414,7 @@ export default function EditIngredientPage({
                 type="number"
                 placeholder="0"
                 value={carbs}
-                onChange={(e) => setCarbs(e.target.value)}
+                onChange={(e) => setCarbs(e.target.valueAsNumber)}
               />
             </FormField>
 
@@ -424,7 +424,7 @@ export default function EditIngredientPage({
                 type="number"
                 placeholder="0"
                 value={fat}
-                onChange={(e) => setFat(e.target.value)}
+                onChange={(e) => setFat(e.target.valueAsNumber)}
               />
             </FormField>
           </FormGrid>
@@ -465,7 +465,7 @@ export default function EditIngredientPage({
                 type="number"
                 placeholder="0"
                 value={availableAmount}
-                onChange={(e) => setAvailableAmount(e.target.value)}
+                onChange={(e) => setAvailableAmount(e.target.valueAsNumber)}
               />
             </FormField>
 

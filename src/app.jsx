@@ -94,6 +94,9 @@ const Main = styled.main`
   margin-top: 70px;
   overflow-y: auto;
   height: calc(100vh - 60px);
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const Content = styled.div`

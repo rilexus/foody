@@ -359,7 +359,7 @@ export default function ShoppingListPage() {
 
   const [items, setItems] = useShopingList();
   const [ingredients] = useIngredients();
-
+  
   const toggleItem = (id) => {
     setItems(
       items.map((item) =>
