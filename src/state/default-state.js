@@ -127,6 +127,10 @@ export const defaultState = {
   version: "1.0.0",
   apiEndpoint: "https://api.dietplanner.com/v1",
   syncInterval: 3000,
+  chat: {
+    history: [],
+  },
+  dietaryRestriction: "",
   shopingList,
   ingredients: [
     {

@@ -9,6 +9,7 @@ import IngredientsPage from "./components/ingredients/page";
 import ShoppingListPage from "./components/shoping-list/page";
 import PlannerPage from "./components/planner/page";
 import Layout from "./components/Layout";
+import ChatPage from "./components/chat/page";
 
 const Container = styled.div`
   display: flex;
@@ -111,11 +112,12 @@ function App() {
           <TopBar>
             <Logo>
               <LogoIcon>🍽️</LogoIcon>
-              <LogoText>Foody</LogoText>
+              <LogoText>Aide</LogoText>
             </Logo>
 
             <TabsContainer>
               <NavItem to="/">Home</NavItem>
+              <NavItem to="/chat">Chat</NavItem>
               <NavItem to="/shopping-list">🛒 Shopping List</NavItem>
               <NavItem to="/recipes">Recipes</NavItem>
               <NavItem to="/ingredients">Ingredients</NavItem>
@@ -128,6 +130,7 @@ function App() {
             <Content>
               <Routes>
                 <Route path="/" element={<div>home</div>} />
+                <Route path="/chat" element={<ChatPage />} />
                 <Route path="/recipes" element={<Recipes />} />
                 <Route path="/ingredients" element={<IngredientsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

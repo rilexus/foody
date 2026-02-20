@@ -11,6 +11,21 @@ contextBridge.exposeInMainWorld("api", {
 });
 
 contextBridge.exposeInMainWorld("electron", {
+  eventbus: {
+    send(eventName, data) {
+      ipcRenderer.send(eventName, data);
+    },
+    on(name, cb) {
+      const listener = (_event, data) => cb(data);
+      ipcRenderer.on(name, listener);
+      return () => ipcRenderer.removeListener(name, listener);
+    },
+
+    off(name, cb) {
+      const listener = (_event, data) => cb(data);
+      ipcRenderer.removeListener(name, listener);
+    },
+  },
   store: {
     on(name, cb) {
       const listener = (_event, data) => cb(data);

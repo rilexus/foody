@@ -1,5 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const path = require("node:path");
+import Store from "electron-store";
+import { createAgent } from "./agent";
+
+const store = new Store();
+const getState = () => store.get("application-state");
+const setState = (state) => store.set("application-state", state);
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -9,9 +14,11 @@ if (require("electron-squirrel-startup")) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 920,
     webPreferences: {
+      allowRunningInsecureContent: true, // dev only
+
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,
       nodeIntegration: false,
@@ -56,19 +63,66 @@ app.on("window-all-closed", () => {
   }
 });
 
-import Store from "electron-store";
+const registerEvents = () => {
+  // IPC listener
+  ipcMain.on("electron-store-get", async (event, val) => {
+    event.returnValue = store.get(val);
+  });
 
-const store = new Store();
+  ipcMain.on("electron-store-set", async (event, key, val) => {
+    store.set(key, val);
+    event.sender.send("electron-store-update", getState());
+  });
 
-// IPC listener
-ipcMain.on("electron-store-get", async (event, val) => {
-  event.returnValue = store.get(val);
-});
+  ipcMain.on("ai-user-request", async (event, value) => {
+    // TODO: Do agent work here
+    const { sender, content, timestamp, id } = value;
+    const {
+      chat: { history },
+    } = getState();
+    const runAgent = createAgent({ getState, setState });
 
-ipcMain.on("electron-store-set", async (event, key, val) => {
-  store.set(key, val);
-  event.sender.send("electron-store-update", store.get("application-state"));
-});
+    const messages = await runAgent(content, history, {
+      onToolCall: (name, args) => {
+        event.sender.send("ai-tool-call", {
+          toolName: name,
+          args,
+          timestamp: new Date(),
+        });
+      },
+      onToolCallEnd: (name, result) => {
+        event.sender.send("ai-tool-called", {
+          toolName: name,
+          result,
+          timestamp: new Date(),
+        });
+      },
+      onComplete: (agentResponse) => {
+        event.sender.send("ai-assistent-response", {
+          content: agentResponse,
+          role: "assistant",
+          timestamp: new Date(),
+        });
+      },
+      onToken: (token) => {
+        event.sender.send("ai-agent-stream-response", {
+          role: "agent",
+          content: token,
+          timestamp: new Date(),
+        });
+      },
+      onTextDelta: (token) => {
+        event.sender.send("ai-text-delta", {
+          role: "assistant",
+          content: token,
+          timestamp: new Date(),
+        });
+      },
+    });
+  });
+};
+
+registerEvents();
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
