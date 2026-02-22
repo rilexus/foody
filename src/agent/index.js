@@ -88,7 +88,7 @@ const Chunk_Types = {
   finishStep: "finish-step",
 };
 
-export const createAgent = ({ getState, setState }) => {
+export const createAgent = (context) => {
   return async (message, history = [], callbacks = {}) => {
     const messages = [
       { role: Role_Types.system, content: SYSTEM_PROMPT },
@@ -102,12 +102,7 @@ export const createAgent = ({ getState, setState }) => {
       const result = streamText({
         model: lmstudio(MODEL_NAME),
         messages,
-        tools: createTools({
-          getState,
-          setState: (state) => {
-            setState(state);
-          },
-        }),
+        tools: createTools(context),
         toolChoice: "auto",
       });
 
@@ -169,7 +164,7 @@ export const createAgent = ({ getState, setState }) => {
           break;
         }
 
-        const result = await executeTool(tc.toolName, tc.args);
+        const result = await executeTool(tc.toolName, tc.args, context);
         callbacks.onToolCallEnd?.(tc.toolName, result);
 
         const content = [

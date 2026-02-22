@@ -289,12 +289,13 @@ export default function ChatPage() {
 
   useEventListener("ai-tool-call", (event) => {});
 
-  useEventListener("ai-tool-called", (event) => {
-    // setMessages((prev) => [
-    //   ...prev,
-    //   { content: `Tool called: ${event.toolName}`, role: "tool" },
-    // ]);
+  useEventListener("ai-assistant-token-usage", (event) => {
+    console.log(event);
   });
+
+  useEventListener('ai-tool-approval-request', () => {
+    
+  })
 
   const send = useEventListener("ai-assistent-response", (response) => {
     setIsTyping(false);
