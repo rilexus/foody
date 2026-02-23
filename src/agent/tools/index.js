@@ -169,7 +169,9 @@ export const createTools = ({ getState, setState }) => {
             Unit: availableUnit,
           }),
         );
-        return `Available ingredients:\n${toMarkdownTable(rows)}`;
+        return `Available ingredients:
+          ${toMarkdownTable(rows)}
+        `;
       },
     }),
     saveDietaryRestrictions: tool({
