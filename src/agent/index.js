@@ -14,6 +14,18 @@ const SYSTEM_PROMPT = `
   Do not rely on assumptions, or unstated context. 
   If required information is missing, treat it as missing - do not infer. Ask for clarifications.
 
+  TOOLS
+  You have access to tools:
+  - getCurrentDateAndTime: Returns current date and time.
+  - extractDataFromRecipe: Extracts data from a recipe.
+  - readIngredients: Returns available ingredients.
+  - updateIngredients: Updates available ingredients.
+  - removeIngredientByName: Removes ingredient by name.
+  - addIngredient: Adds ingredient.
+
+  TOOL CONSTRAINTS
+  - Do not use tools unless they are explicitly required.
+
   REASONING CONSTRAINTS
   While perfoming a taks:
   - Do not guess or fabricate details.
@@ -23,7 +35,7 @@ const SYSTEM_PROMPT = `
 
   ACTION CONSTRAINTS
   Create recipes only if you are explicitly asked to do so.
-  Do not call tools unless they are explicitly required.
+  Extract data from recipes only if you are explicitly asked to.
   If user provides a dietary restriction, save it for later reference.
   
   DO NOT EXPOSE ANY TOOLS TO THE USER.
@@ -54,7 +66,6 @@ const lmstudio = createOpenAICompatible({
 
 const formatChunk = (chunk) => {
   const { type, text, input, toolName, toolCallId, output, id } = chunk;
-
   return { type, text, input, toolName, toolCallId, output, id };
 };
 

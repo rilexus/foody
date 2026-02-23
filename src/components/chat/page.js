@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { useState, useRef, useEffect } from "react";
 import { useEventListener } from "../../hooks/use-event-listener";
 import { useApplicationState } from "../../state/hooks/use-application-state";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const Container = styled.div`
   display: flex;
@@ -118,7 +120,7 @@ const MessageContent = styled.div`
   word-wrap: break-word;
 `;
 
-const MessageText = styled.p`
+const MessageText = styled.div`
   margin: 0;
 
   font-size: 15px;
@@ -293,9 +295,7 @@ export default function ChatPage() {
     console.log(event);
   });
 
-  useEventListener('ai-tool-approval-request', () => {
-    
-  })
+  useEventListener("ai-tool-approval-request", () => {});
 
   const send = useEventListener("ai-assistent-response", (response) => {
     setIsTyping(false);
@@ -386,7 +386,11 @@ export default function ChatPage() {
                     $isUser={message.role === "user"}
                   >
                     <MessageContent $isUser={message.role === "user"}>
-                      <MessageText>{message.content}</MessageText>
+                      <MessageText>
+                        <Markdown remarkPlugins={[remarkGfm]}>
+                          {message.content}
+                        </Markdown>
+                      </MessageText>
                       <MessageTime $isUser={message.role === "user"}>
                         {formatTime(message.timestamp)}
                       </MessageTime>
